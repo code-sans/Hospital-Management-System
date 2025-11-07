@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Appointments{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2><i class="fas fa-calendar-check"></i> Appointments</h2>
+
+  <form method="get" class="row g-3 my-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="Search by patient username">
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" name="status" title="Status">
+        <option value="">All Statuses</option>
+        {% for s in ['Scheduled','Confirmed','Completed','Cancelled'] %}
+          <option value="{{ s }}" {{ 'selected' if status_filter==s }}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <input type="date" class="form-control" name="date" value="{{ date_filter }}" title="Date">
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-outline-primary w-100" type="submit"><i class="fas fa-filter"></i> Filter</button>
+    </div>
+  </form>
+
+  {% if appointments.items %}
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments.items %}
+        <tr>
+          <td>{{ appt.appointment_date.strftime('%Y-%m-%d') }}</td>
+          <td>{{ appt.appointment_time.strftime('%H:%M') }}</td>
+          <td>{{ appt.patient.user.username }}</td>
+          <td>{{ appt.doctor.user.username }}</td>
+          <td>{{ appt.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if appointments.pages > 1 %}
+  <nav aria-label="Appointments pagination">
+    <div class="pagination justify-content-center" role="list">
+      {% if appointments.has_prev %}
+      <div class="page-item" role="listitem"><a class="page-link" href="{{ url_for('admin.view_appointments', page=appointments.prev_num, search=search, status=status_filter, date=date_filter) }}">Previous</a></div>
+      {% endif %}
+      {% for p in appointments.iter_pages() %}
+        {% if p %}
+        <div class="page-item {{ 'active' if p == appointments.page }}" role="listitem"><a class="page-link" href="{{ url_for('admin.view_appointments', page=p, search=search, status=status_filter, date=date_filter) }}">{{ p }}</a></div>
+        {% endif %}
+      {% endfor %}
+      {% if appointments.has_next %}
+      <div class="page-item" role="listitem"><a class="page-link" href="{{ url_for('admin.view_appointments', page=appointments.next_num, search=search, status=status_filter, date=date_filter) }}">Next</a></div>
+      {% endif %}
+    </div>
+  </nav>
+  {% endif %}
+  {% else %}
+  <p class="text-muted">No appointments found.</p>
+  {% endif %}
+</div>
+{% endblock %}

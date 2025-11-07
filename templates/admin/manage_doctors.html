@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Doctors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user-md"></i> Manage Doctors</h2>
+        <a class="btn btn-primary" href="{{ url_for('admin.manage_doctors') }}#add-doctor-form">
+            <i class="fas fa-plus"></i> Add Doctor
+        </a>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3" role="search" aria-label="Search doctors">
+                <div class="col-md-8">
+                    <label for="doctorSearch" class="visually-hidden">Search doctors</label>
+                    <input id="doctorSearch" type="text" class="form-control" name="search" value="{{ search }}" 
+                           placeholder="Search by name, email, or license number" aria-label="Search doctors">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-outline-primary w-100" aria-label="Search">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Doctors List -->
+    <div class="card">
+        <div class="card-body">
+            {% if doctors.items %}
+                <div class="table-responsive">
+                    <table class="table table-striped" aria-label="Doctors list">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">License</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Experience</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doctor in doctors.items %}
+                            <tr>
+                                <td>{{ doctor.user.full_name }}</td>
+                                <td>{{ doctor.user.email }}</td>
+                                <td>{{ doctor.department.name }}</td>
+                                <td>{{ doctor.license_number }}</td>
+                                <td>{{ doctor.phone or 'N/A' }}</td>
+                                <td>{{ doctor.experience_years }} years</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if doctor.user.is_active else 'danger' }}">
+                                        {{ 'Active' if doctor.user.is_active else 'Inactive' }}
+                                    </span>
+                                </td>
+                                <td class="d-flex gap-2">
+                                    <span class="d-inline-block" aria-hidden="true">
+                                        <i class="fas fa-edit text-muted"></i>
+                                    </span>
+                                    {% if doctor.user.is_active %}
+                                        <a href="{{ url_for('admin.deactivate_doctor', doctor_id=doctor.id) }}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           aria-label="Deactivate doctor {{ doctor.user.username }}" title="Deactivate doctor">
+                                            <i class="fas fa-ban" aria-hidden="true"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if doctors.pages > 1 %}
+                <nav aria-label="Doctors pagination">
+                    <div class="pagination justify-content-center" role="list">{%- if doctors.has_prev -%}<div class="page-item" role="listitem"><a class="page-link" href="{{ url_for('admin.manage_doctors', page=doctors.prev_num, search=search) }}">Previous</a></div>{%- endif -%}{%- for page in doctors.iter_pages() -%}{%- if page -%}<div class="page-item {{ 'active' if page == doctors.page }}" role="listitem"><a class="page-link" href="{{ url_for('admin.manage_doctors', page=page, search=search) }}">{{ page }}</a></div>{%- endif -%}{%- endfor -%}{%- if doctors.has_next -%}<div class="page-item" role="listitem"><a class="page-link" href="{{ url_for('admin.manage_doctors', page=doctors.next_num, search=search) }}">Next</a></div>{%- endif -%}</div>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
+                    <h5>No doctors found</h5>
+                    <p class="text-muted">Add some doctors to get started.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Doctor Form (no JS required) -->
+<div id="add-doctor-form" class="card mt-4">
+    <div class="card-header">Add New Doctor</div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.add_doctor') }}">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="first_name" class="form-label">First Name *</label>
+                    <input id="first_name" type="text" class="form-control" name="first_name" placeholder="Enter first name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="last_name" class="form-label">Last Name *</label>
+                    <input id="last_name" type="text" class="form-control" name="last_name" placeholder="Enter last name" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="username" class="form-label">Username *</label>
+                    <input id="username" type="text" class="form-control" name="username" placeholder="Enter username" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email *</label>
+                    <input id="email" type="email" class="form-control" name="email" placeholder="doctor@example.com" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="password" class="form-label">Password *</label>
+                    <input id="password" type="password" class="form-control" name="password" placeholder="Create a password" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="department_id" class="form-label">Department *</label>
+                    <select id="department_id" class="form-select" name="department_id" required>
+                        <option value="">Select Department</option>
+                        {% for department in departments %}
+                            <option value="{{ department.id }}">{{ department.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="license_number" class="form-label">License Number *</label>
+                    <input id="license_number" type="text" class="form-control" name="license_number" placeholder="e.g., MD-123456" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input id="phone" type="tel" class="form-control" name="phone" placeholder="e.g., +1 555 123 4567">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="experience_years" class="form-label">Experience (Years)</label>
+                    <input id="experience_years" type="number" class="form-control" name="experience_years" min="0" placeholder="Years of experience">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="consultation_fee" class="form-label">Consultation Fee</label>
+                    <input id="consultation_fee" type="number" class="form-control" name="consultation_fee" min="0" step="0.01" placeholder="Fee in USD">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="qualification" class="form-label">Qualification</label>
+                    <input id="qualification" type="text" class="form-control" name="qualification" placeholder="e.g., MBBS, MD">
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Add Doctor</button>
+                <a href="#top" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
