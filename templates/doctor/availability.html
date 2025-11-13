@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Availability{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>My Availability</h2>
+
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header">Set Availability</div>
+        <div class="card-body">
+          <form method="post" action="{{ url_for('doctor.set_availability') }}" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="day_of_week">Day of Week</label>
+              <select id="day_of_week" class="form-select" name="day_of_week" required>
+                <option value="">Select Day</option>
+                <option value="0">Monday</option>
+                <option value="1">Tuesday</option>
+                <option value="2">Wednesday</option>
+                <option value="3">Thursday</option>
+                <option value="4">Friday</option>
+                <option value="5">Saturday</option>
+                <option value="6">Sunday</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="start_time">Start</label>
+              <input id="start_time" type="time" class="form-control" name="start_time" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="end_time">End</label>
+              <input id="end_time" type="time" class="form-control" name="end_time" required>
+            </div>
+            <div class="col-md-12 form-check">
+              <input class="form-check-input" type="checkbox" id="is_available" name="is_available" checked>
+              <label class="form-check-label" for="is_available">Available</label>
+            </div>
+            <div class="col-12">
+              <button class="btn btn-primary" type="submit">Set Weekly Availability</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header">Weekly Schedule</div>
+        <div class="card-body p-0">
+          {% if availability %}
+          <div class="table-responsive">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>Day</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in availability %}
+                <tr>
+                  <td>
+                    {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+                    {{ days[a.day_of_week] }}
+                  </td>
+                  <td>{{ a.start_time.strftime('%H:%M') }} - {{ a.end_time.strftime('%H:%M') }}</td>
+                  <td>
+                    <span class="badge bg-{{ 'success' if a.is_available else 'danger' }}">
+                      {{ 'Available' if a.is_available else 'Not Available' }}
+                    </span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="p-3 text-muted">No weekly availability set yet.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -16,7 +16,6 @@ class Config:
     DEBUG = True
     TESTING = False
 
-    # Upload configuration (if needed for future features)
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
 
 class DevelopmentConfig(Config):
