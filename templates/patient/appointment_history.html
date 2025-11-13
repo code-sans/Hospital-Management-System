@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Appointment History{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Appointment History</h2>
+
+  {% if appointments_with_treatments %}
+  <div class="list-group">
+    {% for ap, tr in appointments_with_treatments %}
+    <div class="list-group-item">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="fw-semibold">Dr. {{ ap.doctor.user.username }}</div>
+          <div class="text-muted small">{{ ap.appointment_date.strftime('%Y-%m-%d') }} at {{ ap.appointment_time.strftime('%H:%M') }}</div>
+        </div>
+        <span class="badge bg-{{ 'success' if ap.status == 'Completed' else 'secondary' }}">{{ ap.status }}</span>
+      </div>
+      {% if tr %}
+      <div class="mt-2">
+        <div><strong>Diagnosis:</strong> {{ tr.diagnosis }}</div>
+        {% if tr.prescription %}<div><strong>Prescription:</strong> {{ tr.prescription }}</div>{% endif %}
+        {% if tr.treatment_notes %}<div><strong>Notes:</strong> {{ tr.treatment_notes }}</div>{% endif %}
+        {% if tr.follow_up_date %}<div><strong>Follow-up:</strong> {{ tr.follow_up_date.strftime('%Y-%m-%d') }}</div>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-muted">No appointment history available.</p>
+  {% endif %}
+</div>
+{% endblock %}

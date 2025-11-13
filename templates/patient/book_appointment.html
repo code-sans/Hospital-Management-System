@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Book Appointment{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Book Appointment with Dr. {{ doctor.user.username }}</h2>
+
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="card">
+        <div class="card-header">Available Slots (next 7 days)</div>
+        <div class="card-body">
+          {% if availability %}
+          <ul class="list-group" role="list">
+            {% for a in availability %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-semibold">{{ a.date.strftime('%Y-%m-%d') }}</div>
+                <small class="text-muted">{{ a.start_time.strftime('%H:%M') }} - {{ a.end_time.strftime('%H:%M') }}</small>
+              </div>
+              <form class="d-flex gap-2" method="post" action="{{ url_for('patient.confirm_appointment') }}" aria-label="Book appointment for {{ a.date.strftime('%Y-%m-%d') }} at {{ a.start_time.strftime('%H:%M') }}">
+                <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+                <input type="hidden" name="appointment_date" value="{{ a.date.strftime('%Y-%m-%d') }}">
+                <label for="appointment_time_{{ loop.index }}" class="visually-hidden">Time</label>
+                <input id="appointment_time_{{ loop.index }}" type="time" class="form-control" name="appointment_time" value="{{ a.start_time.strftime('%H:%M') }}" placeholder="Select time" required>
+                <button class="btn btn-primary" type="submit">Book</button>
+              </form>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-muted">No availability found for the next week.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card">
+        <div class="card-header">Existing Appointments (next 7 days)</div>
+        <div class="card-body p-0">
+          {% if existing_appointments %}
+          <div class="table-responsive">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ap in existing_appointments %}
+                <tr>
+                  <td>{{ ap.appointment_date.strftime('%Y-%m-%d') }}</td>
+                  <td>{{ ap.appointment_time.strftime('%H:%M') }}</td>
+                  <td>{{ ap.status }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="p-3 text-muted">No existing appointments in the next week.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card mt-3">
+    <div class="card-header">Optional: Reason for visit</div>
+    <div class="card-body">
+      <form method="post" action="{{ url_for('patient.confirm_appointment') }}" class="row g-3">
+        <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+        <div class="col-md-4">
+          <label class="form-label" for="appointment_date">Date</label>
+          <input class="form-control" id="appointment_date" type="date" name="appointment_date" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="appointment_time">Time</label>
+          <input class="form-control" id="appointment_time" type="time" name="appointment_time" required>
+        </div>
+        <div class="col-md-12">
+          <label class="form-label" for="reason">Reason</label>
+          <textarea id="reason" name="reason" class="form-control" rows="2" placeholder="Describe your symptoms or reason for visit"></textarea>
+        </div>
+        <div class="col-md-12">
+          <button class="btn btn-primary" type="submit">Confirm Appointment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

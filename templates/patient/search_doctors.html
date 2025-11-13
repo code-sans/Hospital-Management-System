@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Find Doctors{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Find Doctors</h2>
+  <form method="get" class="row g-3 mb-3">
+    <div class="col-md-6">
+      <input type="text" class="form-control" placeholder="Search by name, department, qualification" name="search" value="{{ search }}">
+    </div>
+    <div class="col-md-4">
+  <label class="visually-hidden" for="deptSelect">Department</label>
+  <select id="deptSelect" name="department" class="form-select" title="Department">
+        <option value="">All Departments</option>
+        {% for dept in departments %}
+        <option value="{{ dept.id }}" {{ 'selected' if selected_department|string == dept.id|string }}>{{ dept.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100" type="submit">Search</button>
+    </div>
+  </form>
+
+  {% if doctors.items %}
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Department</th>
+          <th>Qualification</th>
+          <th>Experience</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doctor in doctors.items %}
+        <tr>
+          <td>{{ doctor.user.username }}</td>
+          <td>{{ doctor.department.name }}</td>
+          <td>{{ doctor.qualification or '—' }}</td>
+          <td>{{ doctor.experience_years or 0 }} years</td>
+          <td>
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('patient.book_appointment', doctor_id=doctor.id) }}">Book</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if doctors.pages > 1 %}
+  <nav aria-label="Doctors pagination">
+    <div class="pagination" role="list">
+      {% if doctors.has_prev %}
+      <div class="page-item" role="listitem"><a class="page-link" href="{{ url_for('patient.search_doctors', page=doctors.prev_num, search=search, department=selected_department) }}">Previous</a></div>
+      {% endif %}
+      {% for p in doctors.iter_pages() %}
+      {% if p %}
+      <div class="page-item {{ 'active' if p == doctors.page }}" role="listitem">
+        <a class="page-link" href="{{ url_for('patient.search_doctors', page=p, search=search, department=selected_department) }}">{{ p }}</a>
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% if doctors.has_next %}
+      <div class="page-item" role="listitem"><a class="page-link" href="{{ url_for('patient.search_doctors', page=doctors.next_num, search=search, department=selected_department) }}">Next</a></div>
+      {% endif %}
+    </div>
+  </nav>
+  {% endif %}
+  {% else %}
+  <p class="text-muted">No doctors found.</p>
+  {% endif %}
+</div>
+{% endblock %}
