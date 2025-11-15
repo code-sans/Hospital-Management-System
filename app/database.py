@@ -1,6 +1,6 @@
 from app import db
 from app.models import (
-    User, Admin, Department, Specialization, Doctor, Patient, 
+    User, Admin, Department, Doctor, Patient, 
     Appointment, Treatment, DoctorAvailability, DoctorSchedule,
     MedicalRecord, Prescription
 )

@@ -61,26 +61,11 @@ class Department(db.Model):
 
     # Relationships
     doctors = db.relationship('Doctor', backref='department', lazy=True, cascade='all, delete-orphan')
-    specializations = db.relationship('Specialization', backref='department', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Department {self.name}>'
 
-class Specialization(db.Model):
-    __tablename__ = 'specializations'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=False)
-    description = db.Column(db.Text)
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-
-    # Relationships
-    doctors = db.relationship('Doctor', backref='specialization', lazy=True)
-
-    def __repr__(self):
-        return f'<Specialization {self.name}>'
 
 class Doctor(db.Model):
     __tablename__ = 'doctors'
@@ -88,7 +73,6 @@ class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
     department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=False)
-    specialization_id = db.Column(db.Integer, db.ForeignKey('specializations.id'), nullable=True)
     license_number = db.Column(db.String(50), unique=True, nullable=False, index=True)
     phone = db.Column(db.String(15))
     experience_years = db.Column(db.Integer, default=0)
@@ -111,12 +95,12 @@ class Patient(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
-    patient_id = db.Column(db.String(20), unique=True, nullable=False, index=True)  # P001, P002, etc.
+    patient_id = db.Column(db.String(20), unique=True, nullable=False, index=True) 
     phone = db.Column(db.String(15))
     address = db.Column(db.Text)
     date_of_birth = db.Column(db.Date)
-    gender = db.Column(db.String(10))  # Male, Female, Other
-    blood_group = db.Column(db.String(5))  # A+, B-, O+, etc.
+    gender = db.Column(db.String(10))  
+    blood_group = db.Column(db.String(5))  
     emergency_contact_name = db.Column(db.String(100))
     emergency_contact_phone = db.Column(db.String(15))
     emergency_contact_relation = db.Column(db.String(50))
@@ -186,7 +170,7 @@ class Appointment(db.Model):
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
     appointment_date = db.Column(db.Date, nullable=False, index=True)
     appointment_time = db.Column(db.Time, nullable=False)
-    status = db.Column(db.String(20), default='Scheduled', nullable=False)  # Scheduled, Confirmed, In-Progress, Completed, Cancelled, No-Show
+    status = db.Column(db.String(20), default='Scheduled', nullable=False)  
     appointment_type = db.Column(db.String(30), default='Consultation')  # Consultation, Follow-up, Emergency, Check-up
     reason = db.Column(db.Text)
     notes = db.Column(db.Text)
@@ -198,8 +182,6 @@ class Appointment(db.Model):
     # Relationships
     treatments = db.relationship('Treatment', backref='appointment', lazy=True, cascade='all, delete-orphan')
 
-    # Unique constraint to prevent double booking
-    __table_args__ = (db.UniqueConstraint('doctor_id', 'appointment_date', 'appointment_time', name='unique_appointment_slot'),)
 
     def __repr__(self):
         return f'<Appointment {self.appointment_id}>'
@@ -225,7 +207,6 @@ class Treatment(db.Model):
     def __repr__(self):
         return f'<Treatment {self.treatment_id}>'
 
-# Additional models for comprehensive hospital management
 
 class MedicalRecord(db.Model):
     __tablename__ = 'medical_records'

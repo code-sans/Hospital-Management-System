@@ -32,21 +32,29 @@
       </thead>
       <tbody>
         {% for ap in appointments.items %}
-        <tr>
-          <td>{{ ap.appointment_date.strftime('%Y-%m-%d') }}</td>
-          <td>{{ ap.appointment_time.strftime('%H:%M') }}</td>
-          <td>Dr. {{ ap.doctor.user.username }}</td>
-          <td>{{ ap.status }}</td>
-          <td>
-            {% if ap.status in ['Scheduled', 'Confirmed'] %}
-              <a class="btn btn-sm btn-outline-danger" href="{{ url_for('patient.cancel_appointment', appointment_id=ap.id) }}" onclick="return confirm('Cancel this appointment?')">Cancel</a>
-              <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('patient.reschedule_appointment', appointment_id=ap.id) }}">Reschedule</a>
-            {% else %}
-              —
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
+  <tr>
+    <td>{{ ap.appointment_date.strftime('%Y-%m-%d') }}</td>
+    <td>{{ ap.appointment_time.strftime('%H:%M') }}</td>
+    <td>Dr. {{ ap.doctor.user.username }}</td>
+    <td>
+      <span class="badge bg-{{ 'success' if ap.status=='Scheduled' else
+                              'primary' if ap.status=='Confirmed' else
+                              'dark'   if ap.status=='Completed' else
+                              'secondary' }}">{{ ap.status }}</span>
+    </td>
+    <td>
+      {% if ap.status in ['Scheduled', 'Confirmed'] %}
+        <a class="btn btn-sm btn-outline-danger"
+           href="{{ url_for('patient.cancel_appointment', appointment_id=ap.id) }}"
+           onclick="return confirm('Cancel this appointment?');">Cancel</a>
+      {% elif ap.status == 'Cancelled' %}
+        <span class="text-muted">Cancelled</span>
+      {% else %}
+        —
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
       </tbody>
     </table>
   </div>

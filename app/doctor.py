@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from app import db
-from app.models import User, Doctor, Patient, Appointment, Treatment, DoctorAvailability, Department, Specialization
+from app.models import User, Doctor, Patient, Appointment, Treatment, DoctorAvailability, Department
 from datetime import datetime, date, timedelta, time
 from functools import wraps
 

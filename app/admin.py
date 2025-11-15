@@ -5,8 +5,7 @@ from datetime import datetime
 from functools import wraps
 from app import db
 from app.models import (
-    User, Admin, Doctor, Patient, Department,
-    Specialization, Appointment, Treatment, DoctorAvailability
+    User, Admin, Doctor, Patient, Department, Appointment, Treatment, DoctorAvailability
 )
 
 bp = Blueprint('admin', __name__)
