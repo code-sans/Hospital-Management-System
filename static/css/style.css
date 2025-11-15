@@ -1,0 +1,8 @@
+body.auth-bg {
+    background-image: url('../img/auth-bg.jpg.jpg'), url('../img/auth-bg.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
