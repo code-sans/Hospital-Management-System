@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for
 from app import create_app, db
-from app.database import init_database, get_database_stats
+from app.database import init_database
+
 import os
 app = create_app('development')
 @app.route('/')
