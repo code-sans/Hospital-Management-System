@@ -30,7 +30,6 @@ def login():
             flash(f'Welcome, {user.username}!')
 
 
-            # Redirect based on user role
 
             if user.role == 'admin':
                 return redirect(url_for('admin.dashboard'))
