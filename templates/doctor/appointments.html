@@ -30,6 +30,7 @@
           <th>Time</th>
           <th>Patient</th>
           <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -39,24 +40,46 @@
           <td>{{ ap.appointment_time.strftime('%H:%M') }}</td>
           <td>{{ ap.patient.user.username }}</td>
           <td>{{ ap.status }}</td>
+
+          <td>
+            {% if ap.status in ['Scheduled', 'Confirmed'] %}
+              <a href="{{ url_for('doctor.complete_appointment', appointment_id=ap.id) }}"
+                 class="btn btn-sm btn-success">
+                Complete
+              </a>
+            {% endif %}
+
+            <a href="{{ url_for('doctor.patient_history', patient_id=ap.patient_id) }}"
+               class="btn btn-sm btn-outline-info">
+               History
+            </a>
+          </td>
+
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+
   {% if appointments.pages > 1 %}
   <nav aria-label="Appointments pagination">
     <div class="pagination justify-content-center" role="list">
       {% if appointments.has_prev %}
-      <div class="page-item" role="listitem"><a class="page-link" href="{{ url_for('doctor.appointments', page=appointments.prev_num, date=date_filter, status=status_filter) }}">Previous</a></div>
+      <div class="page-item">
+        <a class="page-link" href="{{ url_for('doctor.appointments', page=appointments.prev_num, date=date_filter, status=status_filter) }}">Previous</a>
+      </div>
       {% endif %}
       {% for p in appointments.iter_pages() %}
         {% if p %}
-        <div class="page-item {{ 'active' if p == appointments.page }}" role="listitem"><a class="page-link" href="{{ url_for('doctor.appointments', page=p, date=date_filter, status=status_filter) }}">{{ p }}</a></div>
+        <div class="page-item {{ 'active' if p == appointments.page }}">
+          <a class="page-link" href="{{ url_for('doctor.appointments', page=p, date=date_filter, status=status_filter) }}">{{ p }}</a>
+        </div>
         {% endif %}
       {% endfor %}
       {% if appointments.has_next %}
-      <div class="page-item" role="listitem"><a class="page-link" href="{{ url_for('doctor.appointments', page=appointments.next_num, date=date_filter, status=status_filter) }}">Next</a></div>
+      <div class="page-item">
+        <a class="page-link" href="{{ url_for('doctor.appointments', page=appointments.next_num, date=date_filter, status=status_filter) }}">Next</a>
+      </div>
       {% endif %}
     </div>
   </nav>

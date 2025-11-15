@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Patient History{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Medical History – {{ patient.user.full_name }}</h2>
+
+    {% if appointments_with_treatments %}
+        <div class="list-group mt-3">
+            {% for ap, tr in appointments_with_treatments %}
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>Date:</strong> {{ ap.appointment_date }} <br>
+                        <strong>Time:</strong> {{ ap.appointment_time }}
+                    </div>
+                    <span class="badge bg-{{ 'success' if ap.status == 'Completed' else 'secondary' }}">
+                        {{ ap.status }}
+                    </span>
+                </div>
+
+                {% if tr %}
+                <div class="mt-2">
+                    <p><strong>Diagnosis:</strong> {{ tr.diagnosis }}</p>
+                    {% if tr.prescription %}
+                    <p><strong>Prescription:</strong> {{ tr.prescription }}</p>
+                    {% endif %}
+                    {% if tr.treatment_notes %}
+                    <p><strong>Notes:</strong> {{ tr.treatment_notes }}</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-muted">No treatment added yet.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted mt-3">No history available.</p>
+    {% endif %}
+
+    <a href="{{ url_for('doctor.appointments') }}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Complete Appointment{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Complete Appointment</h2>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">
+                Patient: {{ appointment.patient.user.full_name }}
+            </h5>
+            <p class="text-muted">
+                {{ appointment.appointment_date }} at {{ appointment.appointment_time }}
+            </p>
+
+            <form method="POST">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Diagnosis *</label>
+                    <textarea name="diagnosis" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Prescription</label>
+                    <textarea name="prescription" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Notes</label>
+                    <textarea name="treatment_notes" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Follow-up Date</label>
+                    <input type="date" name="follow_up_date" class="form-control">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    Mark Appointment as Completed
+                </button>
+            </form>
+
+            <a href="{{ url_for('doctor.appointments') }}" class="btn btn-secondary w-100 mt-3">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

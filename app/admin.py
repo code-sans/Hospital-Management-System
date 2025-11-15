@@ -278,6 +278,31 @@ def view_appointments():
         date_filter=filter_date
     )
 
+@bp.route('/patient_history/<int:patient_id>')
+@login_required
+@admin_required
+def patient_history(patient_id):
+    patient = Patient.query.get_or_404(patient_id)
+
+    history = (
+        db.session.query(Appointment, Treatment, Doctor, User)
+        .join(Treatment, Treatment.appointment_id == Appointment.id)  # must have treatment
+        .join(Doctor, Doctor.id == Appointment.doctor_id)
+        .join(User, User.id == Doctor.user_id)
+        .filter(
+            Appointment.patient_id == patient_id,
+            Appointment.status == 'Completed'
+        )
+        .order_by(Appointment.appointment_date.desc())
+        .all()
+    )
+
+    return render_template(
+        "admin/patient_history.html",
+        patient=patient,
+        history=history
+    )
+
 
 @bp.route('/cancel_appointment/<int:appointment_id>')
 @login_required
